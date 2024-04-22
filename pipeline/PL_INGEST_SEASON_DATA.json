@@ -208,7 +208,7 @@
 				}
 			},
 			{
-				"name": "act_iinsert_lookup_metadata",
+				"name": "act_insert_lookup_metadata",
 				"type": "Lookup",
 				"dependsOn": [
 					{
