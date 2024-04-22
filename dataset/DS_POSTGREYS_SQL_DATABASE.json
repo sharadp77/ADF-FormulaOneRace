@@ -1,0 +1,16 @@
+{
+	"name": "DS_POSTGREYS_SQL_DATABASE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_AZURE_POSTGREY_SQL",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "formulaonerace_db",
+			"table": "formulaone_metadata_table"
+		}
+	}
+}

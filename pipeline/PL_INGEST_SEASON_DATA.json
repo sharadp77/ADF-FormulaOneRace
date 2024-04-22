@@ -7,7 +7,14 @@
 				"name": "act_web1",
 				"description": "This activity will get data from API",
 				"type": "WebActivity",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "act_set_var_start_time",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -182,6 +189,91 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "act_set_var_start_time",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "start_time",
+					"value": {
+						"value": "@utcNow('yyyy-MM-dd HH:mm:ss')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "act_iinsert_lookup_metadata",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "act_Set_variable_seasons_data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": {
+							"value": "INSERT INTO formulaonerace_db.formulaone_metadata_table (job_id,job_name,task_name,status,start_time) VALUES ('@{formatDateTime(variables('start_time'),'yyyyMMddHHmmss')}','PL_INGEST_API_DATA','SEASON_API','In-Progress','@{variables('start_time')}');\n\nselect job_id from formulaonerace_db.formulaone_metadata_table;",
+							"type": "Expression"
+						},
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_POSTGREYS_SQL_DATABASE",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "act_lookup_update_season_metadata_entry",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "act_Copy_seasons_data_to_bronze_layer",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": {
+							"value": "UPDATE formulaonerace_db.formulaone_metadata_table\nSET status='success',\n    end_time='@{formatDateTime(variables('start_time'),'yyyyMMddHHmmss')}'\nwhere job_id='@{utcNow('yyyy-MM-dd HH:mm:ss')}' and task_name='SEASON_API';\n\nselect job_id from formulaonerace_db.formulaone_metadata_table;",
+							"type": "Expression"
+						},
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_POSTGREYS_SQL_DATABASE",
+						"type": "DatasetReference"
+					}
+				}
 			}
 		],
 		"variables": {
@@ -189,6 +281,9 @@
 				"type": "String"
 			},
 			"seasons_data": {
+				"type": "String"
+			},
+			"start_time": {
 				"type": "String"
 			}
 		},
