@@ -263,7 +263,7 @@
 					"source": {
 						"type": "AzurePostgreSqlSource",
 						"query": {
-							"value": "UPDATE formulaonerace_db.formulaone_metadata_table\nSET status='success',\n    end_time='@{formatDateTime(variables('start_time'),'yyyyMMddHHmmss')}'\nwhere job_id='@{utcNow('yyyy-MM-dd HH:mm:ss')}' and task_name='DRIVERS_API';\n\nselect job_id from formulaonerace_db.formulaone_metadata_table;",
+							"value": "UPDATE formulaonerace_db.formulaone_metadata_table\nSET status='success',\n    end_time='@{utcNow('yyyy-MM-dd HH:mm:ss')}'\nwhere job_id='@{formatDateTime(variables('start_time'),'yyyyMMddHHmmss')}' and task_name='DRIVERS_API';\n\nselect job_id from formulaonerace_db.formulaone_metadata_table;",
 							"type": "Expression"
 						},
 						"partitionOption": "None"
@@ -272,6 +272,41 @@
 						"referenceName": "DS_POSTGREYS_SQL_DATABASE",
 						"type": "DatasetReference"
 					}
+				}
+			},
+			{
+				"name": "act_lookup_update_season_metadata_entry_copy1",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "act_Copy_drivers_data_to_bronze",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": {
+							"value": "UPDATE formulaonerace_db.formulaone_metadata_table\nSET status='failed',\n    end_time='@{utcNow('yyyy-MM-dd HH:mm:ss')}'\nwhere job_id='@{formatDateTime(variables('start_time'),'yyyyMMddHHmmss')}' and task_name='DRIVERS_API';\n\nselect job_id from formulaonerace_db.formulaone_metadata_table;",
+							"type": "Expression"
+						},
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_POSTGREYS_SQL_DATABASE",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
 				}
 			}
 		],
