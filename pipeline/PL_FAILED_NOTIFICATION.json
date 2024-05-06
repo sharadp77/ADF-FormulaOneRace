@@ -56,11 +56,22 @@
 				"outputs": [
 					{
 						"referenceName": "DS_SINK_RANDOM_DATASET",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"FileName": {
+								"value": "@pipeline().parameters.Randomfilename",
+								"type": "Expression"
+							}
+						}
 					}
 				]
 			}
 		],
+		"parameters": {
+			"Randomfilename": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
