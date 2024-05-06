@@ -69,7 +69,8 @@
 		],
 		"parameters": {
 			"Randomfilename": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "season.csv"
 			}
 		},
 		"annotations": []
