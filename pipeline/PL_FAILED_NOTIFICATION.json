@@ -50,7 +50,13 @@
 				"inputs": [
 					{
 						"referenceName": "DS_SOURCE_RANDOM_DATASET",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"Filename": {
+								"value": "@pipeline().parameters.Randomfilename",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"outputs": [
